@@ -281,6 +281,9 @@
                 <li>CSS styles and classes</li>
                 <li>Hidden metadata and tracking code</li>
                 <li>Tables, images, and complex layouts</li>
+                <li>Multi-dash separator lines (----------)</li>
+                <li>Em-dashes (replaced with regular hyphens)</li>
+                <li>Non-breaking spaces (replaced with regular spaces)</li>
                 <li>All other formatting that causes Outlook issues</li>
             </ul>
         </div>
@@ -358,13 +361,29 @@
         }
 
         function processNode(node) {
-            // Text nodes - return as-is
+            // Text nodes - clean and return
             if (node.nodeType === Node.TEXT_NODE) {
-                const text = node.textContent;
+                let text = node.textContent;
+
+                // Replace NBSP (non-breaking spaces) with regular spaces
+                text = text.replace(/\u00A0/g, ' ');
+                text = text.replace(/&nbsp;/g, ' ');
+
+                // Replace em-dashes with regular hyphens
+                text = text.replace(/\u2014/g, '-');
+                text = text.replace(/&mdash;/g, '-');
+
+                // Remove lines that are just dashes (horizontal rules)
+                // Match lines with 3 or more dashes/hyphens/underscores
+                if (/^[\s\-_=]{3,}$/.test(text.trim())) {
+                    return null;
+                }
+
                 // Skip empty text nodes
                 if (text.trim() === '') {
                     return null;
                 }
+
                 return document.createTextNode(text);
             }
 
@@ -418,8 +437,8 @@
                         }
                     });
 
-                    // Only return if not empty (unless it's a list or br)
-                    if (newElement.childNodes.length > 0 || ['ul', 'ol', 'br'].includes(newTagName)) {
+                    // Only return if not empty (unless it's a list, br, or formatting tag)
+                    if (newElement.childNodes.length > 0 || ['ul', 'ol', 'br', 'b', 'strong', 'i', 'em', 'u'].includes(newTagName)) {
                         return newElement;
                     }
                 } else {
