@@ -1,7 +1,81 @@
 # FileAnalytics
-A series of applets to analyse files
+A series of applets to analyse files and text formatting
 
-## OVERVIEW
+## AVAILABLE TOOLS
+
+### 1. SharePoint File Size Analyzer (filesizeaudit.ps1)
+PowerShell script for analyzing SharePoint document libraries
+
+### 2. Text Formatting Cleaner (text-formatter-cleaner.html)
+Web-based tool for cleaning text formatting before pasting into Outlook
+
+---
+
+## TEXT FORMATTING CLEANER
+
+### Overview
+A browser-based utility that strips unwanted formatting from copied text while preserving essential formatting elements. Perfect for cleaning text copied from Microsoft Copilot, Word, or other applications before pasting into Outlook for Mac (or any email client).
+
+### The Problem It Solves
+When copying text between applications (Copilot → Word → Outlook), hidden formatting codes can accumulate causing:
+- Inconsistent text appearance in Outlook
+- Unexpected font changes
+- Broken indentation
+- Hidden metadata that affects email formatting
+- Copy/paste formatting conflicts
+
+### How to Use
+
+**Simple 5-Step Process:**
+1. **Open the tool**: Double-click `text-formatter-cleaner.html` in any web browser
+2. **Copy** your formatted text from Copilot, Word, or any source
+3. **Paste** into the left "Input" box
+4. **Click** "Clean Formatting" button
+5. **Copy** the cleaned text from the right "Output" box and paste into Outlook
+
+**Keyboard Shortcuts:**
+- `Cmd+Enter` (Mac) or `Ctrl+Enter` (Windows): Clean formatting
+- `Cmd+Shift+C` (Mac) or `Ctrl+Shift+C` (Windows): Copy output to clipboard
+
+### What Gets Preserved
+The tool keeps only these essential formatting elements:
+- **Bold text** (maintains emphasis)
+- *Italic text* (maintains emphasis)
+- Underlined text (maintains emphasis)
+- Bullet points (unordered lists)
+- Numbered lists (ordered lists)
+- Basic indentation
+- Paragraph breaks
+
+### What Gets Removed
+All problematic formatting is stripped:
+- Font families, sizes, and colors
+- Background colors and highlighting
+- CSS styles, classes, and inline styles
+- Hidden metadata and tracking codes
+- Tables, images, and complex layouts
+- Span tags and other wrapper elements
+- All other formatting that causes Outlook issues
+
+### Technical Details
+- **File Type**: Standalone HTML file with embedded CSS and JavaScript
+- **Requirements**: Any modern web browser (Chrome, Safari, Firefox, Edge)
+- **Platform**: Works on Mac, Windows, and Linux
+- **Dependencies**: None - completely self-contained
+- **Privacy**: All processing happens locally in your browser - no data sent to servers
+
+### Use Cases
+- Cleaning AI-generated text from Copilot before emailing
+- Preparing Word document excerpts for Outlook
+- Removing complex formatting from web content
+- Standardizing text formatting for email communications
+- Creating clean, consistent email content
+
+---
+
+## SHAREPOINT FILE SIZE ANALYZER
+
+### Overview
 This PowerShell script analyzes SharePoint document libraries to identify the largest files and calculate storage overhead from version history. It provides detailed information about file ownership, access patterns, and version management to help optimize SharePoint storage.
 
 ## KEY FEATURES

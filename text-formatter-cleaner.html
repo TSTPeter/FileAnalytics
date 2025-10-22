@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Formatting Cleaner for Outlook</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .editor-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-section h2 {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .editor {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.6;
+            background: #fafafa;
+            transition: border-color 0.3s;
+        }
+
+        .editor:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        #inputEditor {
+            cursor: text;
+        }
+
+        #outputEditor {
+            background: #f0f4ff;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .secondary-button {
+            background: #48bb78;
+        }
+
+        .secondary-button:hover {
+            background: #38a169;
+        }
+
+        .clear-button {
+            background: #fc8181;
+        }
+
+        .clear-button:hover {
+            background: #f56565;
+        }
+
+        .info-box {
+            background: #e6fffa;
+            border: 2px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #2c7a7b;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #c6f6d5;
+            color: #22543d;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #fed7d7;
+            color: #742a2a;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .editor-container {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* Preserve formatting in editors */
+        .editor b, .editor strong {
+            font-weight: bold;
+        }
+
+        .editor i, .editor em {
+            font-style: italic;
+        }
+
+        .editor u {
+            text-decoration: underline;
+        }
+
+        .editor ul, .editor ol {
+            margin-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .editor li {
+            margin-bottom: 5px;
+        }
+
+        .editor p {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text Formatting Cleaner for Outlook</h1>
+        <p class="subtitle">
+            Clean text copied from Copilot, Word, or other applications. This tool removes hidden formatting and code
+            while preserving bold, italic, underline, lists, and indentation.
+        </p>
+
+        <div class="info-box">
+            <h3>How to Use:</h3>
+            <ul>
+                <li><strong>Step 1:</strong> Copy formatted text from Copilot, Word, or any application</li>
+                <li><strong>Step 2:</strong> Paste it into the "Input" box below</li>
+                <li><strong>Step 3:</strong> Click "Clean Formatting"</li>
+                <li><strong>Step 4:</strong> Copy the cleaned text from the "Output" box</li>
+                <li><strong>Step 5:</strong> Paste into Outlook - no formatting issues!</li>
+            </ul>
+        </div>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <div class="editor-container">
+            <div class="editor-section">
+                <h2>Input (Paste Here)</h2>
+                <div id="inputEditor" class="editor" contenteditable="true" placeholder="Paste your formatted text here..."></div>
+            </div>
+            <div class="editor-section">
+                <h2>Output (Copy from Here)</h2>
+                <div id="outputEditor" class="editor" contenteditable="false"></div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button onclick="cleanFormatting()">Clean Formatting</button>
+            <button class="secondary-button" onclick="copyToClipboard()">Copy Output to Clipboard</button>
+            <button class="clear-button" onclick="clearAll()">Clear All</button>
+        </div>
+
+        <div class="info-box">
+            <h3>What Gets Preserved:</h3>
+            <ul>
+                <li><strong>Bold text</strong> (using &lt;b&gt; or &lt;strong&gt;)</li>
+                <li><em>Italic text</em> (using &lt;i&gt; or &lt;em&gt;)</li>
+                <li><u>Underlined text</u> (using &lt;u&gt;)</li>
+                <li>Bullet points and numbered lists</li>
+                <li>Basic indentation and paragraph breaks</li>
+            </ul>
+            <h3 style="margin-top: 15px;">What Gets Removed:</h3>
+            <ul>
+                <li>Font families, sizes, and colors</li>
+                <li>Background colors and highlighting</li>
+                <li>CSS styles and classes</li>
+                <li>Hidden metadata and tracking code</li>
+                <li>Tables, images, and complex layouts</li>
+                <li>All other formatting that causes Outlook issues</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Add placeholder behavior
+        const inputEditor = document.getElementById('inputEditor');
+
+        inputEditor.addEventListener('focus', function() {
+            if (this.textContent.trim() === '') {
+                this.textContent = '';
+            }
+        });
+
+        inputEditor.addEventListener('blur', function() {
+            if (this.textContent.trim() === '') {
+                this.setAttribute('data-placeholder', 'visible');
+            }
+        });
+
+        function showStatus(message, isSuccess) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status-message ' + (isSuccess ? 'success' : 'error');
+
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function cleanFormatting() {
+            const inputDiv = document.getElementById('inputEditor');
+            const outputDiv = document.getElementById('outputEditor');
+
+            // Get the HTML content
+            let html = inputDiv.innerHTML;
+
+            if (!html || html.trim() === '' || html === '<br>') {
+                showStatus('Please paste some text in the Input box first!', false);
+                return;
+            }
+
+            try {
+                // Create a temporary div to parse the HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+
+                // Clean the HTML recursively
+                const cleaned = cleanNode(tempDiv);
+
+                // Set the output
+                outputDiv.innerHTML = cleaned.innerHTML;
+
+                showStatus('Text cleaned successfully! Copy from the Output box.', true);
+            } catch (error) {
+                showStatus('Error cleaning text. Please try again.', false);
+                console.error('Cleaning error:', error);
+            }
+        }
+
+        function cleanNode(node) {
+            // Create a new container for cleaned content
+            const cleanedDiv = document.createElement('div');
+
+            // Process each child node
+            Array.from(node.childNodes).forEach(child => {
+                const cleaned = processNode(child);
+                if (cleaned) {
+                    cleanedDiv.appendChild(cleaned);
+                }
+            });
+
+            return cleanedDiv;
+        }
+
+        function processNode(node) {
+            // Text nodes - return as-is
+            if (node.nodeType === Node.TEXT_NODE) {
+                const text = node.textContent;
+                // Skip empty text nodes
+                if (text.trim() === '') {
+                    return null;
+                }
+                return document.createTextNode(text);
+            }
+
+            // Element nodes
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+
+                // Allowed tags that we keep
+                const allowedTags = {
+                    'b': 'b',
+                    'strong': 'strong',
+                    'i': 'i',
+                    'em': 'em',
+                    'u': 'u',
+                    'ul': 'ul',
+                    'ol': 'ol',
+                    'li': 'li',
+                    'p': 'p',
+                    'br': 'br',
+                    'div': 'p',  // Convert divs to paragraphs
+                    'span': null  // Unwrap spans but keep content
+                };
+
+                if (allowedTags.hasOwnProperty(tagName)) {
+                    const newTagName = allowedTags[tagName];
+
+                    if (newTagName === null) {
+                        // Unwrap the tag but keep children
+                        const fragment = document.createDocumentFragment();
+                        Array.from(node.childNodes).forEach(child => {
+                            const cleaned = processNode(child);
+                            if (cleaned) {
+                                fragment.appendChild(cleaned);
+                            }
+                        });
+                        return fragment;
+                    }
+
+                    if (newTagName === 'br') {
+                        return document.createElement('br');
+                    }
+
+                    // Create new element with allowed tag
+                    const newElement = document.createElement(newTagName);
+
+                    // Process children recursively
+                    Array.from(node.childNodes).forEach(child => {
+                        const cleaned = processNode(child);
+                        if (cleaned) {
+                            newElement.appendChild(cleaned);
+                        }
+                    });
+
+                    // Only return if not empty (unless it's a list or br)
+                    if (newElement.childNodes.length > 0 || ['ul', 'ol', 'br'].includes(newTagName)) {
+                        return newElement;
+                    }
+                } else {
+                    // For disallowed tags, try to preserve text content
+                    const fragment = document.createDocumentFragment();
+                    Array.from(node.childNodes).forEach(child => {
+                        const cleaned = processNode(child);
+                        if (cleaned) {
+                            fragment.appendChild(cleaned);
+                        }
+                    });
+                    return fragment;
+                }
+            }
+
+            return null;
+        }
+
+        async function copyToClipboard() {
+            const outputDiv = document.getElementById('outputEditor');
+
+            if (!outputDiv.innerHTML || outputDiv.innerHTML.trim() === '') {
+                showStatus('Output is empty. Clean some text first!', false);
+                return;
+            }
+
+            try {
+                // Get both HTML and plain text versions
+                const htmlContent = outputDiv.innerHTML;
+                const textContent = outputDiv.innerText;
+
+                // Create a ClipboardItem with both formats
+                const clipboardItem = new ClipboardItem({
+                    'text/html': new Blob([htmlContent], { type: 'text/html' }),
+                    'text/plain': new Blob([textContent], { type: 'text/plain' })
+                });
+
+                await navigator.clipboard.write([clipboardItem]);
+                showStatus('Copied to clipboard! You can now paste into Outlook.', true);
+            } catch (err) {
+                // Fallback for older browsers
+                try {
+                    const range = document.createRange();
+                    range.selectNodeContents(outputDiv);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    document.execCommand('copy');
+                    selection.removeAllRanges();
+                    showStatus('Copied to clipboard! You can now paste into Outlook.', true);
+                } catch (fallbackErr) {
+                    showStatus('Could not copy automatically. Please select and copy manually (Cmd+C).', false);
+                    console.error('Copy error:', fallbackErr);
+                }
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('inputEditor').innerHTML = '';
+            document.getElementById('outputEditor').innerHTML = '';
+            showStatus('Cleared all content.', true);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Cmd/Ctrl + Enter to clean
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                cleanFormatting();
+            }
+            // Cmd/Ctrl + Shift + C to copy
+            if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'c') {
+                e.preventDefault();
+                copyToClipboard();
+            }
+        });
+    </script>
+</body>
+</html>
